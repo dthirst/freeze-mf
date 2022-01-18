@@ -12,6 +12,8 @@
 #       <name>_i2.<ext>
 #   start the script by writing 'python3 <path-to-script>/freeze.mf -p <path-of-files>'
 #   the montages will be save in the same folder with the pattern <name)>_montage.png
+#   ! if you have a map file but no square and smaller, the montage will contain only the map. same for square but no hole, hole but no i1/i2.
+#   ! if you have a square file but no map, there will be no montage. same for hole but no square, i1/i2 but no hole.
 #   thank your local technician
 # ********
 
@@ -37,26 +39,26 @@ def resize_to_fraction(image, fraction, margin):
             floor(width / fraction) - 2 * margin)
     return image.resize(size)
 
+def check_and_open(src, fbasename, fext, label):
+    try:
+        image = Image.open(path.join(src, f'{fbasename}{label}{fext}'))
+        return image
+    except:
+        return None
+
 def load_images(src):
     images = {}
     filenames = listdir(src)
     
     for file in [ st for st in filenames if 'map' in st ]:
         image = Image.open(path.join(src, file))
-        images[file.split('map')[0]] = [ image, None, None, None, None ]
-    for file in listdir(src):
-        try:
-            image = Image.open(path.join(src, file))
-            if 'square' in file:
-                images[file.split('square')[0]][1] = image 
-            elif 'hole' in file:
-                images[file.split('hole')[0]][2] = image
-            elif 'i1' in file:
-                images[file.split('i1')[0]][3] = image
-            elif 'i2' in file:
-                images[file.split('i2')[0]][4] = image
-        except IOError:
-            pass
+        fbasename, fext = file.split('map')
+        images[fbasename] = [ image, None, None, None, None ]
+
+        images[fbasename][1] = check_and_open(src, fbasename, fext, 'square')
+        images[fbasename][2] = check_and_open(src, fbasename, fext, 'hole')
+        images[fbasename][3] = check_and_open(src, fbasename, fext, 'i1')
+        images[fbasename][4] = check_and_open(src, fbasename, fext, 'i2')
     return images
 
 def main():
@@ -78,7 +80,7 @@ def main():
             ypos = floor(height / 2) * (i % 2)
 
             montage.paste(resized, (xpos + margin, ypos + margin))
-        montage.save(path.join(dirpath, f'{fname}_montage.png'))
+        montage.save(path.join(dirpath, f'{fname}montage.png'))
 
 if __name__ == '__main__':
     main()
