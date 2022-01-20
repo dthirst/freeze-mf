@@ -31,13 +31,15 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-p', '--path', help='Path to the directory containing your images.', required=True)
 parser.add_argument('-w', '--width', help='Width in px of the montage.', default=1600)
 parser.add_argument('-m', '--margin', help='Margin as decimal fraction (eG. 0.05 for 5% margin).', default=0.05)
+parser.add_argument('-c', '--color', help='Background color as rgb value (eG. 255 255 255 for white)',
+                    nargs='+', default=[0,0,0], type=int)
 args = vars(parser.parse_args())
 
 width = args['width']
 height = floor(width / 2)
 margin_frac = args['margin']
 dirpath = args['path']
-
+bgcolor = tuple(args['color'])
 
 def resize_to_fraction(image, fraction, margin):
     size = (floor(width / fraction) - 2 * margin,
@@ -52,27 +54,31 @@ def check_and_open(src, fbasename, fext, label):
         return None
 
 def load_images(src):
+    print('- loading images...')
     images = {}
     filenames = listdir(src)
     
     for file in [ st for st in filenames if 'map' in st ]:
         image = Image.open(path.join(src, file))
         fbasename, fext = file.split('map')
+        cleanext = fext.split('.')[1]
+        fext = f'.{cleanext}'
         images[fbasename] = [ image, None, None, None, None ]
 
         images[fbasename][1] = check_and_open(src, fbasename, fext, 'square')
         images[fbasename][2] = check_and_open(src, fbasename, fext, 'hole')
         images[fbasename][3] = check_and_open(src, fbasename, fext, 'i1')
         images[fbasename][4] = check_and_open(src, fbasename, fext, 'i2')
+    print('- done.')
     return images
 
 def main():
     imagesets = load_images(dirpath)
-
+    print('mounting images...')
     for fname, images in imagesets.items():
         montage = Image.new(mode='RGBA', size=(width, height), color=(0,0,0,0))
         draw = ImageDraw.Draw(montage)
-        montage.paste('black', (0,0,width,height))
+        montage.paste(bgcolor, (0,0,width,height))
         margin = floor(margin_frac * width / 2)
         montage.paste(resize_to_fraction(images[0], 2, margin), (margin, margin))
 
@@ -86,6 +92,7 @@ def main():
 
             montage.paste(resized, (xpos + margin, ypos + margin))
         montage.save(path.join(dirpath, f'{fname}montage.png'))
+        print(f'{fname}montage.png saved.')
 
 if __name__ == '__main__':
     main()
