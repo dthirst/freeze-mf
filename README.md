@@ -1,5 +1,4 @@
 # freeze-mf - a simple tool for making montages of cryoEM screening images
-written 2022 by demian keihsler at the institute of molecular pathology, vienna
 ********
 usage:<br/>
 * save the files you want to be in the montage in the following pattern in **one folder**:<br/>
