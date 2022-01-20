@@ -21,6 +21,14 @@
 #     - if you have a square and/or any other file but no map, there will be no montage.
 #   thank your local technician 🍻
 # ********
+# you can pass the following **optional** arguments to customise the output.
+# If you don't, the default values will be used:
+# - '-w' or '--width' followed by the desired width of the montage in pixels.
+#   eG.: '-w 2000' for 2000px. Default: 1600px
+# - '-m' or '--margin' follwed by the desired margin in percent.
+#   eG.: '-m 0.03' for 3%. Default: 5%
+# - '-c' or '--color' followed by the desired background colour as rgb value.
+#   eG.: '-c 255 255 255' for white or `-c 0 0 0` for black. Default: black
 
 import argparse
 from PIL import Image, ImageDraw
