@@ -37,8 +37,8 @@ from math import floor
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-p', '--path', help='Path to the directory containing your images.', required=True)
-parser.add_argument('-w', '--width', help='Width in px of the montage.', default=1600)
-parser.add_argument('-m', '--margin', help='Margin as decimal fraction (eG. 0.05 for 5% margin).', default=0.05)
+parser.add_argument('-w', '--width', help='Width in px of the montage.', default=1600, type=int)
+parser.add_argument('-m', '--margin', help='Margin as decimal fraction (eG. 0.05 for 5% margin).', default=0.05, type=float)
 parser.add_argument('-c', '--color', help='Background color as rgb value (eG. 255 255 255 for white)',
                     nargs='+', default=[0,0,0], type=int)
 args = vars(parser.parse_args())
